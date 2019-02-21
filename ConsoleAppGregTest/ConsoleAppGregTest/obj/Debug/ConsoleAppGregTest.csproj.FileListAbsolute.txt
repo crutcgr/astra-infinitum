@@ -1,0 +1,7 @@
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\bin\Debug\ConsoleAppGregTest.exe.config
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\bin\Debug\ConsoleAppGregTest.exe
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\bin\Debug\ConsoleAppGregTest.pdb
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\obj\Debug\ConsoleAppGregTest.csproj.CoreCompileInputs.cache
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\obj\Debug\ConsoleAppGregTest.exe
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\obj\Debug\ConsoleAppGregTest.pdb
+C:\Users\sgcru\source\repos\ConsoleAppGregTest\ConsoleAppGregTest\obj\Debug\ConsoleAppGregTest.csprojAssemblyReference.cache

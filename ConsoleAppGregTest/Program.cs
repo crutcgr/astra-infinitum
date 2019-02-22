@@ -1,0 +1,297 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
+using System.Text;
+
+namespace ConsoleAppGregTest
+{
+    class Program
+    {
+        static int menuChoice = 0;
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("*** Test Console ***\n\n");
+            MenuDisplay();
+   
+        }
+
+        // Print menu options to console.
+        static void MenuDisplay()
+        {
+            menuChoice = 0;
+            // ToDo: Handle the possible exceptions of bad characters at menu choice input***
+            Console.WriteLine(
+                "\n*** Please choose an option below ***\n\n" +
+                "1) Enter a list of integers and view the sum of all even values.\n" +
+                "2) Execute a select * statement from the server_response_log table on Azure Cloud database.\n" +
+                "3) Load a success record to the server_reponse_data table.\n" +
+                "4) Load a timeout error record to the server_reponse_data table.\n" +
+                "5) Load an unknown error record to the server_reponse_data table.\n" +
+                "6) Delete all rows except seed data from the server_reponse_data table.\n" +
+                "7) Exit"
+                );
+
+            menuChoice = int.Parse(Console.ReadLine());       
+       
+                switch (menuChoice)
+                {
+                    case 1:
+                        PositiveNumberSum();
+                        break;
+
+                    case 2:
+                        DatabaseConnect();
+                        break;
+
+                    case 3:
+                        LoadSuccessRecord();
+                        break;
+
+                    case 4:
+                        LoadTimeoutErrorRecord();
+                        break;
+
+                    case 5:
+                        LoadUnknownErrorRecord();
+                        break;
+
+                    case 6:
+                        DeleteAllRowsExceptSeedData();
+                        break;
+
+                    case 7:
+                        Console.WriteLine("Exiting..." );
+                        return;
+
+                    default:
+                        Console.WriteLine("\nThat was not a vaild menu choice.");
+                        MenuDisplay();
+                        break;
+
+                }
+        }
+
+        // Test database connection and return the results from a select * SQl statement.
+        static void DatabaseConnect()
+        {
+            try 
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "gregdbserver.database.windows.net";
+                builder.UserID = "test";            /* Hard-coded only for this demo. */
+                builder.Password = "orion777!";     /* Hard-coded only for this demo. */
+                builder.InitialCatalog = "ae_code_challange";
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    Console.WriteLine("\n>>> RESULTS from the server_response_log table:\n");
+                    
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("SELECT * FROM server_response_log;");
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            Console.WriteLine("======================================================");
+                            Console.WriteLine("ID|START_TIME|END_TIME|STATUS_CODE|RESPONSE|ERROR_CODE");
+                            Console.WriteLine("======================================================");
+                            while (reader.Read())
+                            {
+                                Console.WriteLine("{0} | {1} | {2} | {3} | {4} | {5}", reader.GetInt64(0), reader.GetValue(1).ToString(), 
+                                    reader.GetValue(2).ToString(), reader.GetInt16(3), reader.GetString(4), reader.GetByte(5));
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            MenuDisplay();
+        }
+
+        static void LoadSuccessRecord()
+        {
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "gregdbserver.database.windows.net";
+                builder.UserID = "test";            /* Hard-coded only for this demo. */
+                builder.Password = "orion777!";     /* Hard-coded only for this demo. */
+                builder.InitialCatalog = "ae_code_challange";
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    Console.WriteLine("\n>>> Inserting data to the server_response_log table...\n");
+
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("INSERT INTO server_response_log ");
+                    sb.Append("values(CURRENT_TIMESTAMP, DATEADD(s, 3, GETDATE()), 200, 'Success', 1)");
+
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    connection.Close();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            MenuDisplay();
+        }
+
+        static void LoadTimeoutErrorRecord()
+        {
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "gregdbserver.database.windows.net";
+                builder.UserID = "test";            /* Hard-coded only for this demo. */
+                builder.Password = "orion777!";     /* Hard-coded only for this demo. */
+                builder.InitialCatalog = "ae_code_challange";
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    Console.WriteLine("\n>>> Inserting data to the server_response_log table...\n");
+
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("INSERT INTO server_response_log ");
+                    sb.Append("values(DATEADD(hh, 2, GETDATE()), DATEADD(hh, 2, GETDATE()), -999, 'Timeout Error', 2) ");
+
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    connection.Close();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            MenuDisplay();
+        }
+
+        static void LoadUnknownErrorRecord()
+        {
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "gregdbserver.database.windows.net";
+                builder.UserID = "test";            /* Hard-coded only for this demo. */
+                builder.Password = "orion777!";     /* Hard-coded only for this demo. */
+                builder.InitialCatalog = "ae_code_challange";
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    Console.WriteLine("\n>>> Inserting data to the server_response_log table...\n");
+
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("INSERT INTO server_response_log ");
+                    sb.Append("values(null, null, 500, 'Server Error', 2) ");
+
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    connection.Close();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            MenuDisplay();
+        }
+
+        static void DeleteAllRowsExceptSeedData()
+        {
+            try
+            {
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "gregdbserver.database.windows.net";
+                builder.UserID = "test";            /* Hard-coded only for this demo. */
+                builder.Password = "orion777!";     /* Hard-coded only for this demo. */
+                builder.InitialCatalog = "ae_code_challange";
+
+                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                {
+                    Console.WriteLine("\n>>> Deleting rows except seed data in the server_response_log table...\n");
+
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("DELETE FROM server_response_log ");
+                    sb.Append("WHERE event_id > 4;");
+                    
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    connection.Close();
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            MenuDisplay();
+        }
+
+        // Obtains a list of integers from console input and displays the total of all even integers.
+        static void PositiveNumberSum()
+        {
+            try
+            {
+                Console.WriteLine("\nPlease enter a list of comma-separated integers.");
+                int individualValue = 0;
+                int total = 0;
+                string tags = Console.ReadLine().Trim();
+                if (tags == "H"|| tags =="E")
+                {
+                    return; 
+                }
+                List<int> TagIds = tags.Split(',').Select(int.Parse).ToList();
+                Console.Write("You entered " + tags);
+
+                Console.Write("\nEven Numbers:");
+                for (int i = 0; i < TagIds.Count; i++)
+                {
+                    if (TagIds[i] % 2 == 0)
+                    {
+                        individualValue = TagIds[i];
+                        total = total + individualValue;
+                        Console.Write("\n" + individualValue);
+                    }
+                }
+                Console.Write("\n" + "Sum of all even numbers in the list: " + total + "\n");
+                MenuDisplay();
+            }
+            catch (Exception)
+            {
+                Console.Write("** Input Format Error**\n");
+                PositiveNumberSum();
+            }          
+        }     
+    }
+}
